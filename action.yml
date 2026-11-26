@@ -1,0 +1,29 @@
+name: Lode Integration Guard
+description: On a pull request that adds or removes an integration, shows Lode's published facts for it. Reads 9 config files; sends nothing about your repository.
+author: Lode (trylode.io)
+branding:
+  icon: shield
+  color: gray-dark
+inputs:
+  dirs:
+    description: Folders to check, comma-separated (for monorepos), relative to the repository root.
+    required: false
+    default: "."
+  comment:
+    description: Post or update one pull request comment with the result (needs pull-requests write). The result always goes to the job summary.
+    required: false
+    default: "true"
+  github-token:
+    description: Token used only to post the comment.
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: composite
+  steps:
+    - name: Lode Integration Guard
+      shell: bash
+      env:
+        INPUT_DIRS: ${{ inputs.dirs }}
+        INPUT_COMMENT: ${{ inputs.comment }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: node "$GITHUB_ACTION_PATH/action/run.mjs"
