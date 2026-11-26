@@ -16,7 +16,7 @@ The app does not request access to your code (Contents), issues or pull requests
 
 - **What it uses:** only the commit ids and those nine files.
 - **`.env.example`:** the server receives the whole file but parses only the variable names, the part before `=`.
-- **What it keeps:** nothing. Nothing is stored or logged, and no other request goes to Lode: the app looks up Lode's data on the same server.
+- **What it keeps:** nothing. Nothing from your repository is stored or logged, and no other request goes to Lode: the app looks up Lode's data on the same server.
 
 ## GitHub Action: runs in your own CI
 
@@ -48,4 +48,4 @@ Uninstall the app from your organisation's or account's GitHub settings, or dele
 The code is open.
 
 - **File reads:** in `app/app.mjs` (`readFiles`) and `action/run.mjs` (`filesAtCommit`).
-- **Lode data:** the Action reads it in `lib/guard.mjs` (`lodeReader`, GET only). The app is passed the data directly (the `read` option of `handleEvent`).
+- **Lode data:** the Action reads it in `lib/guard.mjs` (`lodeReader`, GET only). The app looks it up in data its server already holds (`app/bundle-reader.mjs`, passed as the `read` option of `handleEvent`), so it sends no request to Lode.

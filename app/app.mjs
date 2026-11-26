@@ -1,4 +1,4 @@
-// Lode Integration Guard, GitHub App side (D28, LOD-60). Not deployed: the app isn't registered yet.
+// Lode Integration Guard, GitHub App side (D28, LOD-60).
 //
 // Permissions it is built for: single-file read on the 9 paths in FILES, checks write, metadata read.
 // On a check suite for a pull request it reads those files at the base and head commits, runs the
@@ -14,9 +14,9 @@
 // entry and are not checked; base.sha is the base branch tip, so a base branch that gained an
 // integration after the branch was cut can show as "removes".
 //
-// The HTTP entrypoint (not written yet; it goes live only with Paul's yes) must verify the signature on
-// the raw body with verifySignature, answer GitHub within 10 seconds and do the work after, never log
-// the payload, and pass `read` over the bundled data (mcp/bundle.json) so no request to Lode is made.
+// The HTTP entrypoint is netlify/functions/guard.mjs in Lode's repository (/guard/webhook): it verifies the
+// signature on the raw body, answers GitHub at once and does the work after, never logs the payload, and
+// passes `read` over the bundled data (bundle-reader.mjs), so no request to Lode is made.
 import { createHmac, createSign, timingSafeEqual } from 'node:crypto';
 import { FILES, GUARD_NAME, GUARD_UA, TIMEOUT_MS, runGuard, lodeReader } from '../lib/guard.mjs';
 
@@ -91,6 +91,9 @@ export function commitsFrom(name, payload) {
   return null;
 }
 
+// GitHub shows the check's title above its summary, so the report's own heading is left out there
+export const checkSummary = (text) => String(text).replace(/^((?:<!--[^>]*-->\n)?)### [^\n]*\n+/, '$1');
+
 // One webhook in -> at most one check run out. Returns what it did, for logs and tests.
 export async function handleEvent({ name, payload }, { appId, privateKey, fetchImpl = globalThis.fetch, lodeBase, read, now } = {}) {
   const commits = commitsFrom(name, payload);
@@ -103,7 +106,7 @@ export async function handleEvent({ name, payload }, { appId, privateKey, fetchI
   if (result.quiet) return { action: 'quiet' };
   const res = await gh(fetchImpl, `/repos/${owner}/${repo}/check-runs`, {
     token, method: 'POST',
-    body: { name: GUARD_NAME, head_sha: commits.head, status: 'completed', conclusion: 'neutral', output: { title: result.report.title, summary: result.report.text } },
+    body: { name: GUARD_NAME, head_sha: commits.head, status: 'completed', conclusion: 'neutral', output: { title: result.report.title, summary: checkSummary(result.report.text) } },
   });
   if (!res.ok) throw new Error(`GitHub refused the check run (HTTP ${res.status})`);
   return { action: 'check-run', added: result.diff.added.map((a) => a.id), removed: result.diff.removed.map((a) => a.id) };

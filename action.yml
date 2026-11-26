@@ -1,5 +1,5 @@
 name: Lode Integration Guard
-description: Shows Lode's source-linked facts when a pull request adds or removes an integration. Reads 9 config files only.
+description: Shows source-linked facts from Lode when a pull request adds or removes an integration. Reads 9 config files only.
 author: Lode (trylode.io)
 branding:
   icon: shield

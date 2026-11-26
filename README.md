@@ -15,8 +15,8 @@ It reads 9 config files and stores nothing about your repository. See [PERMISSIO
 
 ## Two ways to run it
 
-- **GitHub Action** (available now): runs in your own CI, works for monorepos and for organisations that don't install apps. Needs Node 18 or later on the runner, which GitHub-hosted runners have.
-- **GitHub App** (coming soon): one click, no workflow to edit. It requests read access to the 9 named files only, plus checks. Its code is in `app/`; it isn't available to install yet.
+- **GitHub App** (one click, no workflow to edit): [install Lode Integration Guard](https://github.com/apps/lode-integration-guard) and choose the repositories. It requests read access to the 9 named files only, plus checks, and posts its result as a neutral check on the pull request.
+- **GitHub Action** (runs in your own CI; for monorepos, or if your organisation doesn't install apps). Needs Node 18 or later on the runner, which GitHub-hosted runners have. Add this workflow:
 
 ```yaml
 on: pull_request
